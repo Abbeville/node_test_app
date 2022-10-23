@@ -40,6 +40,14 @@ export const emailVerificationRequest = object({
   }),
 });
 
+export const forgetPasswordRequest = object({
+  body: object({
+    email: string({
+      required_error: "Email address is required"
+    })
+  }),
+});
+
 export type CreateUserInput = Omit<
   TypeOf<typeof registrationRequest>["body"],
   "passwordConfirm"

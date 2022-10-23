@@ -6,12 +6,14 @@ import {
   loginUserHandler,
   refreshAccessTokenHandler,
   registerUserHandler,
-  verifyEmailHandler
+  verifyEmailHandler,
+  forgetPasswordHandler
 } from "../controllers";
 import {
   registrationRequest,
   loginRequest,
-  emailVerificationRequest
+  emailVerificationRequest,
+  forgetPasswordRequest
 } from "../validations/rules";
 
 const router = express.Router();
@@ -26,4 +28,5 @@ router.post("/verifyEmail", validate(emailVerificationRequest), verifyEmailHandl
 
 router.get("/profile", deserializeUser, requireUser, myProfileHandler);
 
+router.post("/forgot-password", validate(forgetPasswordRequest), forgetPasswordHandler);
 export default router;

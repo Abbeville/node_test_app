@@ -203,3 +203,53 @@ export const verifyEmailHandler = async (
     next(err);
   }
 };
+
+export const forgetPasswordHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { email } = req.body;
+    const { verificationCode, hashedVerificationCode } = await createVerificationCode()
+    const user = await findUserByEmail(email);
+
+
+    if (!user) {
+      return next(new AppError(400, "Invalid email"));
+    }
+
+    if (user) {
+      try {
+        user.verificationCode = hashedVerificationCode;
+        await updateUser(user);
+
+        await sendEmail({
+          email: user.email,
+          subject: "Reset your password",
+          text: `Your reset password code is ${verificationCode}`
+        });
+
+        res.status(StatusCodes.OK).json({
+          status: "success",
+          message: "A password reset code has been sent to your email"
+        });
+
+      } catch (err) {
+        user.verificationCode = null;
+        await updateUser(user);
+
+
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+          status: "error",
+          message: "There was an error sending email, please try again"
+        });
+      }
+    }
+
+  } catch (err: any) {
+    next(err)
+
+  }
+
+}
