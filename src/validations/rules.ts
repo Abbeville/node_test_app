@@ -48,6 +48,17 @@ export const forgetPasswordRequest = object({
   }),
 });
 
+export const resetPasswordRequest = object({
+  body: object({
+    verificationCode: string({
+      required_error: "Verification code must be provided"
+    }),
+    password: string({
+      required_error: "Verification code must be provided"
+    })
+  }),
+})
+
 export type CreateUserInput = Omit<
   TypeOf<typeof registrationRequest>["body"],
   "passwordConfirm"

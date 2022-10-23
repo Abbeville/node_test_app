@@ -253,3 +253,40 @@ export const forgetPasswordHandler = async (
   }
 
 }
+
+export const resetPasswordHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { verificationCode, password } = req.body;
+  try {
+    const getVerificationCode = crypto
+      .createHash("sha256")
+      .update(verificationCode)
+      .digest("hex")
+
+    const user = await findUser({ verificationCode: getVerificationCode });
+
+    if (!user) {
+      return next(new AppError(401, "invalid verification code"));
+    }
+
+    if (!password) {
+      return next(new AppError(401, "Password must be provided"))
+    }
+
+    user.verificationCode = null;
+    user.password = await hashedPassword(password, 12)
+    await updateUser(user);
+
+    res.status(StatusCodes.OK).json({
+      status: "success",
+      message: "Hooray!, password has been reset"
+    })
+
+  } catch (err) {
+    next(err)
+  }
+
+}

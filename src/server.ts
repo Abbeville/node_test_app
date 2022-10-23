@@ -8,20 +8,12 @@ import AppError from "./utils/appError";
 import authRouter from "./routes/auth.route";
 
 const cors = require("cors");
-const multer = require("multer");
 require("dotenv").config();
 
 const corsOptions = {
   origin: "*",
   optionsSuccessStatus: 200,
 };
-
-const multerConfig = multer({
-  storage: multer.memoryStorage(),
-  limits: {
-    fileSize: 5 * 1024 * 1024, // no larger than 5mb, you can change as needed.
-  },
-});
 
 const app = express();
 
@@ -37,7 +29,6 @@ database
 
 app.use(json());
 app.use(cors(corsOptions));
-app.use(multer().single("file"));
 
 app.use("/api/auth", authRouter);
 
